@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <style>
+        .feature-group {
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef; /* Light border */
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fa; /* Light background */
+            box-shadow: 0 2px 4px rgba(0,0,0,.05); /* Subtle shadow */
+        }
+        .feature-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+            color: #343a40; /* Darker text for label */
+        }
+        .form-control {
+            width: 100%;
+        }
+        .container {
+            max-width: 800px; /* Wider container for better layout */
+        }
+        h4 {
+            margin-top: 30px;
+            margin-bottom: 20px;
+            color: #007bff; /* Primary color for heading */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-5 text-center">Online Shopper Prediction Dashboard</h2>
+        <p class="lead text-center">Welcome, {{ session['username'] }}!</p>
+        <div class="text-center mb-4">
+            <a href="{{ url_for('logout') }}" class="btn btn-danger me-2">Logout</a>
+            <a href="{{ url_for('visualization') }}" class="btn btn-info">View Visualization</a>
+        </div>
+        <hr>
+
+        <h4>Enter Session Details for Prediction:</h4>
+        <form action="{{ url_for('predict') }}" method="post">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="feature-group">
+                        <label for="administrative">1. Administrative Page Visits:</label>
+                        <input type="number" step="1" name="feature1" id="administrative" class="form-control" placeholder="e.g., 0, 1, 2 (integer)" min="0" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="feature-group">
+                        <label for="admin_duration">2. Administrative Duration (seconds):</label>
+                        <input type="number" step="any" name="feature2" id="admin_duration" class="form-control" placeholder="e.g., 0.0, 50.5 (float)" min="0" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="feature-group">
+                        <label for="informational">3. Informational Page Visits:</label>
+                        <input type="number" step="1" name="feature3" id="informational" class="form-control" placeholder="e.g., 0, 1, 2 (integer)" min="0" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="feature-group">
+                        <label for="info_duration">4. Informational Duration (seconds):</label>
+                        <input type="number" step="any" name="feature4" id="info_duration" class="form-control" placeholder="e.g., 0.0, 30.0 (float)" min="0" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="feature-group">
+                        <label for="product_related">5. Product-Related Page Visits:</label>
+                        <input type="number" step="1" name="feature5" id="product_related" class="form-control" placeholder="e.g., 10, 50 (integer)" min="0" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="feature-group">
+                        <label for="product_duration">6. Product-Related Duration (seconds):</label>
+                        <input type="number" step="any" name="feature6" id="product_duration" class="form-control" placeholder="e.g., 200.0, 1500.5 (float)" min="0" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="feature-group">
+                        <label for="bounce_rates">7. Bounce Rates:</label>
+                        <input type="number" step="0.0001" name="feature7" id="bounce_rates" class="form-control" placeholder="e.g., 0.01, 0.05 (float)" min="0" max="1" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-group">
+                        <label for="exit_rates">8. Exit Rates:</label>
+                        <input type="number" step="0.0001" name="feature8" id="exit_rates" class="form-control" placeholder="e.g., 0.02, 0.06 (float)" min="0" max="1" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-group">
+                        <label for="page_values">9. Page Values:</label>
+                        <input type="number" step="any" name="feature9" id="page_values" class="form-control" placeholder="e.g., 0.0, 10.5 (float)" min="0" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="feature-group">
+                        <label for="special_day">10. Special Day Closeness (0.0 to 1.0):</label>
+                        <input type="number" step="0.2" name="feature10" id="special_day" class="form-control" placeholder="e.g., 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 (float)" min="0" max="1" required>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="feature-group">
+                        <label for="month">11. Month (Encoded Integer):</label>
+                        <input type="number" step="1" name="feature11" id="month" class="form-control" placeholder="e.g., 0 for Jan, 1 for Feb (integer)" required>
+                        <small class="form-text text-muted">Refer to your Colab notebook for exact month codes.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="feature-group">
+                        <label for="os">12. Operating System (Encoded Integer):</label>
+                        <input type="number" step="1" name="feature12" id="os" class="form-control" placeholder="e.g., 1 to 8 (integer)" required>
+                        <small class="form-text text-muted">Refer to your Colab notebook for exact OS codes.</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="feature-group">
+                        <label for="browser">13. Browser (Encoded Integer):</label>
+                        <input type="number" step="1" name="feature13" id="browser" class="form-control" placeholder="e.g., 1 to 13 (integer)" required>
+                        <small class="form-text text-muted">Refer to your Colab notebook for exact browser codes.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="feature-group">
+                        <label for="region">14. Region (Encoded Integer):</label>
+                        <input type="number" step="1" name="feature14" id="region" class="form-control" placeholder="e.g., 1 to 9 (integer)" required>
+                        <small class="form-text text-muted">Refer to your Colab notebook for exact region codes.</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="feature-group">
+                        <label for="traffic_type">15. Traffic Type (Encoded Integer):</label>
+                        <input type="number" step="1" name="feature15" id="traffic_type" class="form-control" placeholder="e.g., 1 to 20 (integer)" required>
+                        <small class="form-text text-muted">Refer to your Colab notebook for exact traffic type codes.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="feature-group">
+                        <label for="visitor_type">16. Visitor Type (Encoded Integer):</label>
+                        <input type="number" step="1" name="feature16" id="visitor_type" class="form-control" placeholder="e.g., 0 for New Visitor, 1 for Other (integer)" required>
+                        <small class="form-text text-muted">Refer to your Colab notebook for exact visitor type codes.</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="feature-group">
+                        <label for="weekend">17. Weekend (0 for No, 1 for Yes):</label>
+                        <input type="number" step="1" name="feature17" id="weekend" class="form-control" placeholder="0 or 1 (integer)" min="0" max="1" required>
+                        <small class="form-text text-muted">0 for weekdays, 1 for weekend.</small>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-lg w-100 mt-4 mb-5">Predict Purchasing Intention</button>
+        </form>
+
+        <p class="text-center mt-4 text-muted">
+            For accurate predictions, ensure the input values match the data types and encodings used during model training.
+        </p>
+    </div>
+</body>
+</html>
