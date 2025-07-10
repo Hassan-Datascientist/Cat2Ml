@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: cat2-flask-app
+    name: cat2-app
     env: python
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn app:app"
